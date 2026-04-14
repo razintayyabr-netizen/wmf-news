@@ -138,49 +138,50 @@ export default function Home() {
         </div>
       ) : (
         <>
-          {/* HERO — Big headline + image */}
+          {/* HERO — FULL WIDTH BIG IMAGE */}
           {hero && (
-            <a href={hero.url} target="_blank" rel="noopener" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', textDecoration: 'none', color: 'inherit', borderBottom: '1px solid var(--border)' }}>
-              <div style={{ position: 'relative', height: 420 }}>
+            <a href={hero.url} target="_blank" rel="noopener" style={{ display: 'block', position: 'relative', height: 520, overflow: 'hidden', textDecoration: 'none', color: 'inherit' }}>
+              <div style={{ position: 'absolute', inset: 0 }}>
                 {hero.urlToImage ? (
                   <img src={hero.urlToImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }} />
+                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1a1a2e, #0f3460)' }} />
                 )}
-                <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 6 }}>
-                  {hero.region && <span style={{ fontSize: 10, background: regionColors[hero.region] || '#666', color: 'white', padding: '3px 8px', borderRadius: 4, fontWeight: 600, letterSpacing: '0.05em' }}>{hero.region}</span>}
-                  <span style={{ fontSize: 10, background: 'var(--red)', color: 'white', padding: '3px 8px', borderRadius: 4, fontWeight: 600 }}>{hero.source}</span>
-                </div>
+                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,15,0.95) 0%, rgba(10,10,15,0.4) 40%, transparent 100%)' }} />
               </div>
-              <div style={{ padding: '32px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--cream)' }}>
-                <h1 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 32, lineHeight: 1.15, marginBottom: 16, letterSpacing: '-0.01em' }}>{hero.title}</h1>
-                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6B6B6B' }}>{timeAgo(hero.publishedAt)}</div>
+              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '48px 48px' }}>
+                <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
+                  {hero.region && <span style={{ fontSize: 11, background: regionColors[hero.region] || '#666', color: 'white', padding: '4px 10px', borderRadius: 6, fontWeight: 600, letterSpacing: '0.08em' }}>{hero.region}</span>}
+                  <span style={{ fontSize: 11, background: '#FF2D2D', color: 'white', padding: '4px 10px', borderRadius: 6, fontWeight: 600 }}>{hero.source}</span>
+                </div>
+                <h1 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 48, lineHeight: 1.1, color: 'white', marginBottom: 12, letterSpacing: '-0.02em' }}>{hero.title}</h1>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 12, color: '#9CA3AF' }}>{timeAgo(hero.publishedAt)}</div>
               </div>
             </a>
           )}
 
-          {/* GRID — Just headlines + images */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'var(--border)' }}>
-            {grid.slice(0, 15).map((a, i) => (
-              <a key={i} href={a.url} target="_blank" rel="noopener" style={{ display: 'flex', flexDirection: 'column', background: 'var(--cream)', textDecoration: 'none', color: 'inherit', transition: 'background 0.2s' }}
+          {/* GRID — BIG CARDS */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '2px', background: 'var(--border)' }}>
+            {grid.slice(0, 12).map((a, i) => (
+              <a key={i} href={a.url} target="_blank" rel="noopener" style={{ display: 'flex', flexDirection: 'row', background: 'var(--cream)', textDecoration: 'none', color: 'inherit', transition: 'background 0.2s', minHeight: 200 }}
                 onMouseEnter={e => e.currentTarget.style.background = '#F3F0EA'}
                 onMouseLeave={e => e.currentTarget.style.background = 'var(--cream)'}>
-                <div style={{ height: 180, overflow: 'hidden' }}>
+                <div style={{ width: '45%', minHeight: 200, overflow: 'hidden', flexShrink: 0 }}>
                   {a.urlToImage ? (
                     <img src={a.urlToImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
-                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
                       onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
                   ) : (
-                    <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg, #1a1a2e, #0f3460)` }} />
+                    <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1a1a2e, #0f3460)' }} />
                   )}
                 </div>
-                <div style={{ padding: 16, flex: 1 }}>
-                  <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                <div style={{ padding: '24px 20px', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
                     {a.region && <span style={{ fontSize: 9, background: regionColors[a.region] || '#666', color: 'white', padding: '2px 6px', borderRadius: 3, fontWeight: 600, letterSpacing: '0.05em' }}>{a.region}</span>}
                     <span style={{ fontSize: 9, color: '#999', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.05em' }}>{a.source}</span>
                   </div>
-                  <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 18, lineHeight: 1.3, marginBottom: 0 }}>{a.title}</h3>
-                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#B0B0B0', marginTop: 8 }}>{timeAgo(a.publishedAt)}</div>
+                  <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 22, lineHeight: 1.3, marginBottom: 8 }}>{a.title}</h3>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#B0B0B0' }}>{timeAgo(a.publishedAt)}</div>
                 </div>
               </a>
             ))}

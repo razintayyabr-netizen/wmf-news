@@ -29,9 +29,9 @@ function timeAgo(dateStr) {
   const now = new Date();
   const diff = Math.floor((now - d) / 1000);
   if (diff < 60) return 'just now';
-  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-  if (diff < 604800) return `${Math.floor(diff / 86400)}d ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+  if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+  if (diff < 604800) return `${Math.floor(diff / 86400)}d`;
   return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
@@ -70,143 +70,122 @@ export default function Home() {
         const res = await fetch('/api/markets');
         const data = await res.json();
         if (data.status === 'ok') setMarkets(data);
-      } catch (e) { /* silent fail */ }
+      } catch (e) {}
     }
     fetchMarkets();
-    const interval = setInterval(fetchMarkets, 60000); // refresh every 60s
+    const interval = setInterval(fetchMarkets, 60000);
     return () => clearInterval(interval);
   }, []);
 
   const hero = articles[0];
-  const topFive = articles.slice(1, 6);
-  const rest = articles.slice(6, 18);
-  const now = new Date();
-  const dateStr = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-  const cat = categories.find(c => c.key === activeCat);
+  const grid = articles.slice(1);
+  const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
     <main>
+      {/* NAV */}
       <nav className="topnav">
-        <div className="nav-top">
-          <span className="nav-date">{dateStr}</span>
-          <span className="nav-edition">Live Aggregation · Zero Editorial</span>
-        </div>
-        <div className="nav-logo">WMF <em>News</em></div>
-        <div className="nav-links">
-          {categories.map(c => (
-            <a key={c.key} href="#" className={activeCat === c.key ? 'active' : ''}
-              onClick={e => { e.preventDefault(); setActiveCat(c.key); }}>
-              {c.icon} {c.label}
-            </a>
-          ))}
-          <a href="#" className="live-link"><span className="live-dot" /> Live</a>
+        <div className="nav-inner">
+          <a href="/" style={{ textDecoration: 'none' }}><div className="nav-logo"><span className="dot" /> WMF <em>News</em></div></a>
+          <div className="nav-links">
+            {categories.map(c => (
+              <a key={c.key} href="#" className={activeCat === c.key ? 'active' : ''}
+                onClick={e => { e.preventDefault(); setActiveCat(c.key); }}>{c.icon} {c.label}</a>
+            ))}
+            <a href="#" className="live-link"><span className="live-dot" /> Live</a>
+          </div>
         </div>
       </nav>
 
-      <div className="paper-grid">
-        <div className="data-bar">
-          {markets?.bitcoin && <div className="data-item"><span>BTC</span> <span className="val">${markets.bitcoin.price?.toLocaleString()}</span> <span style={{ color: markets.bitcoin.change_24h > 0 ? '#22c55e' : '#ef4444', fontSize: 11 }}>{markets.bitcoin.change_24h > 0 ? '▲' : '▼'} {Math.abs(markets.bitcoin.change_24h || 0).toFixed(1)}%</span></div>}
-          {markets?.ethereum && <div className="data-item"><span>ETH</span> <span className="val">${markets.ethereum.price?.toLocaleString()}</span></div>}
-          {markets?.stocks?.sp500 && <div className="data-item"><span>S&P 500</span> <span className="val">{markets.stocks.sp500.price?.toLocaleString(undefined, {maximumFractionDigits: 1})}</span> <span style={{ color: markets.stocks.sp500.change > 0 ? '#22c55e' : '#ef4444', fontSize: 11 }}>{markets.stocks.sp500.change > 0 ? '▲' : '▼'}{Math.abs(markets.stocks.sp500.change || 0).toFixed(0)}</span></div>}
-          {markets?.stocks?.dow && <div className="data-item"><span>DOW</span> <span className="val">{markets.stocks.dow.price?.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>}
-          {markets?.forex?.eur && <div className="data-item"><span>EUR/USD</span> <span className="val">{markets.forex.eur?.toFixed(4)}</span></div>}
-          {markets?.commodities?.gold && <div className="data-item"><span>Gold</span> <span className="val">${markets.commodities.gold?.toLocaleString()}</span></div>}
-          {markets?.forex?.inr && <div className="data-item"><span>USD/INR</span> <span className="val">₹{markets.forex.inr?.toFixed(2)}</span></div>}
-          {!markets && <div className="data-item" style={{ color: '#6B6B6B' }}>Loading market data...</div>}
-        </div>
+      {/* MARKET BAR */}
+      <div className="data-bar">
+        {markets?.bitcoin && <div className="data-item"><span>BTC</span> <span className="val">${markets.bitcoin.price?.toLocaleString()}</span> <span style={{ color: markets.bitcoin.change_24h > 0 ? '#22c55e' : '#ef4444', fontSize: 11 }}>{markets.bitcoin.change_24h > 0 ? '▲' : '▼'}{Math.abs(markets.bitcoin.change_24h || 0).toFixed(1)}%</span></div>}
+        {markets?.ethereum && <div className="data-item"><span>ETH</span> <span className="val">${markets.ethereum.price?.toLocaleString()}</span></div>}
+        {markets?.stocks?.sp500 && <div className="data-item"><span>S&P 500</span> <span className="val">{markets.stocks.sp500.price?.toLocaleString(undefined, {maximumFractionDigits: 1})}</span></div>}
+        {markets?.forex?.eur && <div className="data-item"><span>EUR/USD</span> <span className="val">{markets.forex.eur?.toFixed(4)}</span></div>}
+        {markets?.commodities?.gold && <div className="data-item"><span>Gold</span> <span className="val">${markets.commodities.gold?.toLocaleString()}</span></div>}
+        {markets?.forex?.inr && <div className="data-item"><span>USD/INR</span> <span className="val">₹{markets.forex.inr?.toFixed(2)}</span></div>}
+        {!markets && <div className="data-item" style={{ color: '#6B6B6B' }}>Loading markets...</div>}
+      </div>
 
-        {loading ? (
-          <div className="paper-cell" style={{ gridColumn: '1 / -1', padding: '80px 48px', textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#6B6B6B', fontFamily: 'var(--mono)' }}>
-              Aggregating {cat?.icon} {cat?.label} news from global sources...
-            </div>
+      {/* DATE BAR */}
+      <div style={{ textAlign: 'center', padding: '16px 24px', fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.2em', color: '#6B6B6B', textTransform: 'uppercase', borderBottom: '1px solid var(--border)' }}>
+        {dateStr} · Live Aggregation · Zero Editorial
+      </div>
+
+      {loading ? (
+        <div style={{ padding: '120px 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 14, color: '#6B6B6B', fontFamily: 'var(--mono)' }}>
+            Aggregating {categories.find(c => c.key === activeCat)?.icon} {categories.find(c => c.key === activeCat)?.label} news...
           </div>
-        ) : articles.length === 0 ? (
-          <div className="paper-cell" style={{ gridColumn: '1 / -1', padding: '80px 48px', textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: '#6B6B6B' }}>Could not reach sources for this category. Try again in a moment.</div>
-          </div>
-        ) : (
-          <>
-            {/* HERO */}
-            {hero && (
-              <a href={hero.url} target="_blank" rel="noopener" className="paper-cell hero-cell story" style={{ gridColumn: '1 / 8' }}>
-                <div className="hero-kicker" style={{ color: regionColors[hero.region] || 'var(--red)' }}>
-                  {hero.region && <span style={{ fontSize: 9, background: regionColors[hero.region] || '#666', color: 'white', padding: '2px 6px', borderRadius: 3, marginRight: 6 }}>{hero.region}</span>}
-                  {hero.source}
+        </div>
+      ) : articles.length === 0 ? (
+        <div style={{ padding: '120px 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 14, color: '#6B6B6B' }}>Could not reach sources. Try again in a moment.</div>
+        </div>
+      ) : (
+        <>
+          {/* HERO — Big headline + image */}
+          {hero && (
+            <a href={hero.url} target="_blank" rel="noopener" style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', textDecoration: 'none', color: 'inherit', borderBottom: '1px solid var(--border)' }}>
+              <div style={{ position: 'relative', height: 420 }}>
+                {hero.urlToImage ? (
+                  <img src={hero.urlToImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg, #1a1a2e, #16213e)' }} />
+                )}
+                <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 6 }}>
+                  {hero.region && <span style={{ fontSize: 10, background: regionColors[hero.region] || '#666', color: 'white', padding: '3px 8px', borderRadius: 4, fontWeight: 600, letterSpacing: '0.05em' }}>{hero.region}</span>}
+                  <span style={{ fontSize: 10, background: 'var(--red)', color: 'white', padding: '3px 8px', borderRadius: 4, fontWeight: 600 }}>{hero.source}</span>
                 </div>
-                <h1 className="hero-headline">{hero.title}</h1>
-                <p className="hero-deck">{hero.description}</p>
-                <div className="hero-byline">
-                  <span className="name" style={{ color: regionColors[hero.region] || 'var(--red)' }}>{hero.source}</span>
-                  <span>·</span>
-                  <span className="time">{timeAgo(hero.publishedAt)}</span>
+              </div>
+              <div style={{ padding: '32px 32px', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: 'var(--cream)' }}>
+                <h1 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 32, lineHeight: 1.15, marginBottom: 16, letterSpacing: '-0.01em' }}>{hero.title}</h1>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 11, color: '#6B6B6B' }}>{timeAgo(hero.publishedAt)}</div>
+              </div>
+            </a>
+          )}
+
+          {/* GRID — Just headlines + images */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'var(--border)' }}>
+            {grid.slice(0, 15).map((a, i) => (
+              <a key={i} href={a.url} target="_blank" rel="noopener" style={{ display: 'flex', flexDirection: 'column', background: 'var(--cream)', textDecoration: 'none', color: 'inherit', transition: 'background 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F3F0EA'}
+                onMouseLeave={e => e.currentTarget.style.background = 'var(--cream)'}>
+                <div style={{ height: 180, overflow: 'hidden' }}>
+                  {a.urlToImage ? (
+                    <img src={a.urlToImage} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
+                      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.03)'}
+                      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', background: `linear-gradient(135deg, #1a1a2e, #0f3460)` }} />
+                  )}
+                </div>
+                <div style={{ padding: 16, flex: 1 }}>
+                  <div style={{ display: 'flex', gap: 6, marginBottom: 8, flexWrap: 'wrap' }}>
+                    {a.region && <span style={{ fontSize: 9, background: regionColors[a.region] || '#666', color: 'white', padding: '2px 6px', borderRadius: 3, fontWeight: 600, letterSpacing: '0.05em' }}>{a.region}</span>}
+                    <span style={{ fontSize: 9, color: '#999', fontFamily: 'JetBrains Mono, monospace', letterSpacing: '0.05em' }}>{a.source}</span>
+                  </div>
+                  <h3 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 18, lineHeight: 1.3, marginBottom: 0 }}>{a.title}</h3>
+                  <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, color: '#B0B0B0', marginTop: 8 }}>{timeAgo(a.publishedAt)}</div>
                 </div>
               </a>
-            )}
-
-            {/* TOP 5 SIDEBAR */}
-            <div className="paper-cell" style={{ gridColumn: '8 / -1' }}>
-              <div style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '0.2em', color: '#6B6B6B', marginBottom: 12, textTransform: 'uppercase' }}>Top Stories</div>
-              {topFive.map((a, i) => (
-                <a key={i} href={a.url} target="_blank" rel="noopener" className="numbered-item">
-                  <span className="num">{String(i + 1).padStart(2, '0')}</span>
-                  <div>
-                    <div className="num-title">{a.title}</div>
-                    <div className="num-meta">
-                      <span style={{ color: regionColors[a.region] || '#999', fontWeight: 500 }}>{a.source}</span>
-                      {a.region && <span style={{ marginLeft: 6, fontSize: 9, background: regionColors[a.region] || '#666', color: 'white', padding: '1px 5px', borderRadius: 3 }}>{a.region}</span>}
-                      <span style={{ marginLeft: 6 }}>{timeAgo(a.publishedAt)}</span>
-                    </div>
-                  </div>
-                </a>
-              ))}
-            </div>
-
-            {hero?.urlToImage && (
-              <div className="hero-image" style={{ backgroundImage: `url(${hero.urlToImage})`, backgroundSize: 'cover', backgroundPosition: 'center', gridColumn: '1 / -1' }}>
-                <div className="hero-image-text">{hero.source} · {hero.region}</div>
-              </div>
-            )}
-
-            <div className="rule-red" style={{ gridColumn: '1 / -1' }}></div>
-
-            <div className="section-label" style={{ gridColumn: '1 / -1' }}>
-              {cat?.icon} {cat?.label} — More from Global Sources
-            </div>
-
-            {rest.map((a, i) => {
-              const colSpan = i < 3 ? 4 : 3;
-              const startCol = i < 3 ? (i * 4 + 1) : ((i - 3) * 3 + 1);
-              return (
-                <a key={i} href={a.url} target="_blank" rel="noopener"
-                  className="paper-cell story story-small"
-                  style={{ gridColumn: `${startCol} / span ${colSpan}` }}>
-                  {a.urlToImage && (
-                    <div style={{ height: 120, background: `url(${a.urlToImage}) center/cover`, borderRadius: 4, marginBottom: 10 }} />
-                  )}
-                  <div className="story-kicker" style={{ color: regionColors[a.region] || 'var(--red)' }}>
-                    {a.region && <span style={{ fontSize: 9, background: regionColors[a.region] || '#666', color: 'white', padding: '2px 6px', borderRadius: 3, marginRight: 6 }}>{a.region}</span>}
-                    {a.source}
-                  </div>
-                  <h2 className="story-headline">{a.title}</h2>
-                  {a.description && <p className="story-deck">{a.description}</p>}
-                  <div className="story-meta">{timeAgo(a.publishedAt)}</div>
-                </a>
-              );
-            })}
-          </>
-        )}
-
-        <div className="newsletter-cell" style={{ gridColumn: '1 / -1' }}>
-          <h2 className="nl-title">The <em>Morning</em> Brief</h2>
-          <p className="nl-sub">Top stories from every perspective — delivered daily. Free, forever.</p>
-          <div className="nl-form">
-            <input className="nl-input" placeholder="your@email.com" />
-            <button className="nl-btn">Subscribe</button>
+            ))}
           </div>
+        </>
+      )}
+
+      {/* NEWSLETTER */}
+      <div style={{ background: '#1A1A1A', color: '#FAF8F4', padding: '48px 24px', textAlign: 'center' }}>
+        <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 32, marginBottom: 8 }}>The <em style={{ color: '#FF2D2D' }}>Morning</em> Brief</h2>
+        <p style={{ fontSize: 15, color: '#6B6B6B', marginBottom: 24 }}>Top stories from every perspective — delivered daily.</p>
+        <div style={{ display: 'flex', gap: 8, maxWidth: 480, margin: '0 auto' }}>
+          <input style={{ flex: 1, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '14px 16px', color: 'white', fontSize: 14, outline: 'none', fontFamily: 'Inter, sans-serif' }} placeholder="your@email.com" />
+          <button style={{ background: '#FF2D2D', color: 'white', border: 'none', borderRadius: 8, padding: '14px 28px', fontSize: 14, fontWeight: 600, cursor: 'pointer', fontFamily: 'Inter, sans-serif' }}>Subscribe</button>
         </div>
       </div>
 
+      {/* FOOTER */}
       <footer className="site-footer">
         <div className="footer-grid">
           <div>
@@ -224,7 +203,7 @@ export default function Home() {
             <a href="#">Al Jazeera · Guardian</a>
             <a href="#">CGTN · Xinhua</a>
             <a href="#">RT · TASS</a>
-            <a href="#">Press TV · Fars News</a>
+            <a href="#">Press TV</a>
           </div>
           <div className="footer-col">
             <h5>Company</h5>

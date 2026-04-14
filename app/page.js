@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import WorldMap from './components/WorldMap';
 
 const categories = [
   { key: 'world', label: 'World', icon: '🌍' },
@@ -111,6 +112,18 @@ export default function Home() {
       {/* DATE BAR */}
       <div style={{ textAlign: 'center', padding: '16px 24px', fontSize: 12, fontFamily: 'var(--mono)', letterSpacing: '0.2em', color: '#6B6B6B', textTransform: 'uppercase', borderBottom: '1px solid var(--border)' }}>
         {dateStr} · Live Aggregation · Zero Editorial
+      </div>
+
+      {/* WORLD MAP */}
+      <div style={{ background: '#0A0A0F', padding: '48px 24px 32px' }}>
+        <div style={{ maxWidth: 1340, margin: '0 auto' }}>
+          <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: 10, letterSpacing: '0.3em', color: '#FF2D2D', textTransform: 'uppercase', marginBottom: 8 }}>// Live Global Map</div>
+            <h2 style={{ fontFamily: 'Instrument Serif, serif', fontSize: 36, color: '#FAF8F4', marginBottom: 8 }}>What's Happening <em style={{ color: '#FF2D2D' }}>Where</em></h2>
+            <p style={{ fontSize: 14, color: '#6B6B6B' }}>Click any country dot to see its latest news</p>
+          </div>
+          <WorldMap onCountryClick={(cat, name) => { setActiveCat(cat); }} />
+        </div>
       </div>
 
       {loading ? (

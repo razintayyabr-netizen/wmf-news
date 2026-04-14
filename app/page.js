@@ -211,15 +211,16 @@ export default function Home() {
             <a href="#">Press TV · Fars News</a>
           </div>
           <div className="footer-col">
-            <h5>About</h5>
-            <a href="#">How It Works</a>
-            <a href="#">Source Policy</a>
-            <a href="#">Contact</a>
+            <h5>Company</h5>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Service</a>
           </div>
         </div>
         <div className="footer-bottom">
           <span>© 2026 WMF News · Aggregated from global sources · No editorial content</span>
-          <span>Privacy · Terms</span>
+          <span><a href="/privacy" style={{ color: '#888' }}>Privacy</a> · <a href="/terms" style={{ color: '#888' }}>Terms</a> · <a href="/contact" style={{ color: '#888' }}>Contact</a></span>
         </div>
       </footer>
     </main>

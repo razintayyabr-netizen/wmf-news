@@ -40,6 +40,7 @@ export default function Home() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [allNews, setAllNews] = useState({});
+  const [markets, setMarkets] = useState(null);
 
   useEffect(() => {
     async function fetchNews() {
@@ -62,6 +63,19 @@ export default function Home() {
     }
     fetchNews();
   }, [activeCat]);
+
+  useEffect(() => {
+    async function fetchMarkets() {
+      try {
+        const res = await fetch('/api/markets');
+        const data = await res.json();
+        if (data.status === 'ok') setMarkets(data);
+      } catch (e) { /* silent fail */ }
+    }
+    fetchMarkets();
+    const interval = setInterval(fetchMarkets, 60000); // refresh every 60s
+    return () => clearInterval(interval);
+  }, []);
 
   const hero = articles[0];
   const topFive = articles.slice(1, 6);
@@ -91,12 +105,14 @@ export default function Home() {
 
       <div className="paper-grid">
         <div className="data-bar">
-          <div className="data-item"><span>S&P 500</span> <span className="val">▲ 2.3%</span></div>
-          <div className="data-item"><span>BTC</span> <span className="val">$87,420</span></div>
-          <div className="data-item"><span>EUR/USD</span> <span className="val">1.0847</span></div>
-          <div className="data-item"><span>Gold</span> <span className="val">$3,241/oz</span></div>
-          <div className="data-item"><span>Oil</span> <span className="val">$71.20</span></div>
-          <div className="data-item" style={{ color: '#6B6B6B' }}>Sources: BBC · CNN · Reuters · WSJ · Bloomberg · Al Jazeera · CGTN · RT · Press TV</div>
+          {markets?.bitcoin && <div className="data-item"><span>BTC</span> <span className="val">${markets.bitcoin.price?.toLocaleString()}</span> <span style={{ color: markets.bitcoin.change_24h > 0 ? '#22c55e' : '#ef4444', fontSize: 11 }}>{markets.bitcoin.change_24h > 0 ? '▲' : '▼'} {Math.abs(markets.bitcoin.change_24h || 0).toFixed(1)}%</span></div>}
+          {markets?.ethereum && <div className="data-item"><span>ETH</span> <span className="val">${markets.ethereum.price?.toLocaleString()}</span></div>}
+          {markets?.stocks?.sp500 && <div className="data-item"><span>S&P 500</span> <span className="val">{markets.stocks.sp500.price?.toLocaleString(undefined, {maximumFractionDigits: 1})}</span> <span style={{ color: markets.stocks.sp500.change > 0 ? '#22c55e' : '#ef4444', fontSize: 11 }}>{markets.stocks.sp500.change > 0 ? '▲' : '▼'}{Math.abs(markets.stocks.sp500.change || 0).toFixed(0)}</span></div>}
+          {markets?.stocks?.dow && <div className="data-item"><span>DOW</span> <span className="val">{markets.stocks.dow.price?.toLocaleString(undefined, {maximumFractionDigits: 0})}</span></div>}
+          {markets?.forex?.eur && <div className="data-item"><span>EUR/USD</span> <span className="val">{markets.forex.eur?.toFixed(4)}</span></div>}
+          {markets?.commodities?.gold && <div className="data-item"><span>Gold</span> <span className="val">${markets.commodities.gold?.toLocaleString()}</span></div>}
+          {markets?.forex?.inr && <div className="data-item"><span>USD/INR</span> <span className="val">₹{markets.forex.inr?.toFixed(2)}</span></div>}
+          {!markets && <div className="data-item" style={{ color: '#6B6B6B' }}>Loading market data...</div>}
         </div>
 
         {loading ? (
